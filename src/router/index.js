@@ -12,6 +12,7 @@ const router = new VueRouter({
     return { x: 0, y: 0 }
   },
   routes: [
+    // --------- Home Page ------------
     {
       path: '/',
       name: 'home',
@@ -27,21 +28,36 @@ const router = new VueRouter({
         requiresAuth: true
       },
     },
+
+    // *===============================================---*
+    // *--------- USER ---- ---------------------------------------*
+    // *===============================================---*
     {
-      path: '/second-page',
-      name: 'second-page',
-      component: () => import('@/views/SecondPage.vue'),
-      meta: {
-        pageTitle: 'Second Page',
-        breadcrumb: [
-          {
-            text: 'Second Page',
-            active: true,
-          },
-        ],
-        requiresAuth: true
-      },
+        path: '/apps/users/list',
+        name: 'apps-users-list',
+        component: () => import('@/views/apps/user/users-list/UsersList.vue'),
+        meta: {
+            requiresAuth: true
+        },
     },
+    {
+        path: '/apps/users/view/:id',
+        name: 'apps-users-view',
+        component: () => import('@/views/apps/user/users-view/UsersView.vue'),
+        meta: {
+            requiresAuth: true
+        },
+    },
+    {
+        path: '/apps/users/edit/:id',
+        name: 'apps-users-edit',
+        component: () => import('@/views/apps/user/users-edit/UsersEdit.vue'),
+        meta: {
+            requiresAuth: true
+        },
+    },
+    
+    // ------------- Login Page --------------
     {
       path: '/login',
       name: 'login',
@@ -50,6 +66,8 @@ const router = new VueRouter({
         layout: 'full',
       },
     },
+
+    // ------------- 404 Page ----------------
     {
       path: '/error-404',
       name: 'error-404',
@@ -58,6 +76,7 @@ const router = new VueRouter({
         layout: 'full',
       },
     },
+
     {
       path: '*',
       redirect: 'error-404',

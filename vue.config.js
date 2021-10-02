@@ -15,6 +15,7 @@ module.exports = {
   configureWebpack: {
     resolve: {
       alias: {
+        '@projectConfig': path.resolve(__dirname, 'projectConfig.js'),
         '@themeConfig': path.resolve(__dirname, 'themeConfig.js'),
         '@core': path.resolve(__dirname, 'src/@core'),
         '@validations': path.resolve(__dirname, 'src/@core/utils/validations/validations.js'),

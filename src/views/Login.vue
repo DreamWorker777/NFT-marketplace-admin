@@ -6,7 +6,7 @@
       <b-link class="brand-logo">
         <vuexy-logo />
         <h2 class="brand-text text-primary ml-1">
-          Vuexy
+          Truhelix Admin
         </h2>
       </b-link>
       <!-- /Brand logo-->
@@ -41,7 +41,7 @@
             title-tag="h2"
             class="font-weight-bold mb-1"
           >
-            Welcome to Vuexy! 👋
+            Welcome to Marketplace Admin Panel! 👋
           </b-card-title>
           <b-card-text class="mb-2">
             Please sign-in to your account and start the adventure
@@ -76,12 +76,6 @@
 
               <!-- forgot password -->
               <b-form-group>
-                <div class="d-flex justify-content-between">
-                  <label for="login-password">Password</label>
-                  <b-link :to="{name:'auth-forgot-password-v2'}">
-                    <small>Forgot Password?</small>
-                  </b-link>
-                </div>
                 <validation-provider
                   #default="{ errors }"
                   name="Password"
@@ -100,27 +94,9 @@
                       name="login-password"
                       placeholder="············"
                     />
-                    <b-input-group-append is-text>
-                      <feather-icon
-                        class="cursor-pointer"
-                        :icon="passwordToggleIcon"
-                        @click="togglePasswordVisibility"
-                      />
-                    </b-input-group-append>
                   </b-input-group>
                   <small class="text-danger">{{ errors[0] }}</small>
                 </validation-provider>
-              </b-form-group>
-
-              <!-- checkbox -->
-              <b-form-group>
-                <b-form-checkbox
-                  id="remember-me"
-                  v-model="status"
-                  name="checkbox-1"
-                >
-                  Remember Me
-                </b-form-checkbox>
               </b-form-group>
 
               <!-- submit buttons -->
@@ -177,17 +153,17 @@ export default {
   mixins: [togglePasswordVisibility],
   data() {
     return {
-      status: '',
       password: '',
       userName: '',
       sideImg: require('@/assets/images/pages/login-v2.svg'),
+
       // validation rulesimport store from '@/store/index'
       required,
     }
   },
   computed: {
     passwordToggleIcon() {
-      return this.passwordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon'
+        return this.passwordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon'
     },
     imgUrl() {
       if (store.state.appConfig.layout.skin === 'dark') {
@@ -215,25 +191,37 @@ export default {
                     const userData = res.data;
 
                     if( userData.success ) {
-                        self.$router.push({ name: 'home' })
+                        if( userData.roles.findIndex((item) => item === 'ROLE_ADMIN') == -1 ) {
+                            this.$toast({
+                                component: ToastificationContent,
+                                position: 'top-right',
+                                props: {
+                                    icon: 'HomeIcon',
+                                    variant: 'warn',
+                                    title: 'No Admin Access Control',
+                                },
+                            })    
+                        } else {
+                            self.$router.push({ name: 'home' })
 
-                        this.$toast({
-                            component: ToastificationContent,
-                            position: 'top-right',
-                            props: {
-                                title: `Welcome ${userData.fullName || userData.username}`,
-                                icon: 'CoffeeIcon',
-                                variant: 'success',
-                                text: `You have successfully logged in as Admin. Now you can start to explore!`,
-                            },
-                        })
+                            this.$toast({
+                                component: ToastificationContent,
+                                position: 'top-right',
+                                props: {
+                                    title: `Welcome ${userData.fullName || userData.username}`,
+                                    icon: 'CoffeeIcon',
+                                    variant: 'success',
+                                    text: `You have successfully logged in as Admin. Now you can start to explore!`,
+                                },
+                            })
+                        }
                     } else {
                         this.$toast({
                             component: ToastificationContent,
                             position: 'top-right',
                             props: {
                                 icon: 'HomeIcon',
-                                variant: 'primary',
+                                variant: 'danger',
                                 title: userData.message,
                             },
                         })
@@ -245,7 +233,7 @@ export default {
                         position: 'top-right',
                         props: {
                             icon: 'HomeIcon',
-                            variant: 'primary',
+                            variant: 'danger',
                             title: `Something went wrong.`,
                         },
                     })
