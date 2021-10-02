@@ -36,6 +36,7 @@
           md="6"
           lg="12"
           class="px-xl-2 mx-auto"
+          v-show="!optPage"
         >
           <b-card-title
             title-tag="h2"
@@ -47,8 +48,8 @@
             Please sign-in to your account and start the adventure
           </b-card-text>
 
-          <!-- form -->
-          <validation-observer ref="loginValidation">
+        <!-- login form -->
+          <validation-observer ref="loginValidation" >
             <b-form
               class="auth-login-form mt-2"
               @submit.prevent
@@ -74,7 +75,7 @@
                 </validation-provider>
               </b-form-group>
 
-              <!-- forgot password -->
+              <!-- password -->
               <b-form-group>
                 <validation-provider
                   #default="{ errors }"
@@ -111,6 +112,68 @@
             </b-form>
           </validation-observer>
 
+        </b-col>
+
+        <b-col
+          sm="8"
+          md="6"
+          lg="12"
+          class="px-xl-2 mx-auto centerAlign"
+          v-show="optPage"
+        >
+            <b-card-title
+                title-tag="h2"
+                class="font-weight-bold mb-1"
+            >
+                Two-Factor Authentication
+            </b-card-title>
+            <b-card-text class="mb-2">
+                Scan the QR code or enter the secret in Google Authenticator
+            </b-card-text>
+
+            <!-- opt form -->
+            <validation-observer ref="optValidation">
+                <img :src="twofactor.dataURL" alt="..." class="img-thumbnail" style="width: 70%">
+                <p>Secret - {{twofactor.tempSecret}}</p>
+                <p>Type - TOTP</p>
+
+                <b-form
+                    class="auth-login-form mt-2"
+                    @submit.prevent
+                    >
+                    <!-- username -->
+                    <b-form-group
+                        label="Enter OTP:"
+                        label-for="opt-token"
+                    >
+                        <validation-provider
+                        #default="{ errors }"
+                        name="OTP"
+                        rules="required"
+                        >
+                        <b-form-input
+                            id="opt-token"
+                            v-model="optToken"
+                            type="password"
+                            :state="errors.length > 0 ? false : null"
+                            name="opt-token"
+                            placeholder="Please enter OTP here."
+                        />
+                        <small class="text-danger">{{ errors[0] }}</small>
+                        </validation-provider>
+                    </b-form-group>
+                    
+                    <!-- submit buttons -->
+                    <b-button
+                        type="submit"
+                        variant="primary"
+                        block
+                        @click="optVerify"
+                    >
+                        Submit OTP
+                    </b-button>
+                </b-form>
+            </validation-observer>
         </b-col>
       </b-col>
     <!-- /Login-->
@@ -159,6 +222,11 @@ export default {
 
       // validation rulesimport store from '@/store/index'
       required,
+
+      optPage: false,
+      optToken: '',
+      twofactor: {},
+      userId: ''
     }
   },
   computed: {
@@ -177,9 +245,9 @@ export default {
   methods: {
     ...mapActions('auth', [
         'login',
+        'twofactorVerify'
     ]),
     validationForm() {
-        const self = this
 
         this.$refs.loginValidation.validate().then(success => {
             if (success) {
@@ -191,30 +259,12 @@ export default {
                     const userData = res.data;
 
                     if( userData.success ) {
-                        if( userData.roles.findIndex((item) => item === 'ROLE_ADMIN') == -1 ) {
-                            this.$toast({
-                                component: ToastificationContent,
-                                position: 'top-right',
-                                props: {
-                                    icon: 'HomeIcon',
-                                    variant: 'warn',
-                                    title: 'No Admin Access Control',
-                                },
-                            })    
-                        } else {
-                            self.$router.push({ name: 'home' })
 
-                            this.$toast({
-                                component: ToastificationContent,
-                                position: 'top-right',
-                                props: {
-                                    title: `Welcome ${userData.fullName || userData.username}`,
-                                    icon: 'CoffeeIcon',
-                                    variant: 'success',
-                                    text: `You have successfully logged in as Admin. Now you can start to explore!`,
-                                },
-                            })
-                        }
+                        this.optPage = true;
+                        this.twofactor = userData.twofactor;
+                        this.userId = userData.id;
+
+                        
                     } else {
                         this.$toast({
                             component: ToastificationContent,
@@ -241,10 +291,69 @@ export default {
             }
         })
     },
+    optVerify() {
+        
+        this.$refs.optValidation.validate().then(success => {
+            const self = this;
+            
+            if( success ) {
+                const formData = {
+                    id: this.userId,
+                    token: this.optToken,
+                };
+
+                this.twofactorVerify( formData ).then(res => {
+                    const userData = res.data;
+
+                    if( userData.success ) {
+                        
+                        self.$router.push({ name: 'home' })
+
+                        this.$toast({
+                            component: ToastificationContent,
+                            position: 'top-right',
+                            props: {
+                                title: `Welcome ${userData.fullName || userData.username}`,
+                                icon: 'CoffeeIcon',
+                                variant: 'success',
+                                text: `You have successfully logged in as Admin. Now you can start to explore!`,
+                            },
+                        })
+
+                    } else {
+                        this.$toast({
+                            component: ToastificationContent,
+                            position: 'top-right',
+                            props: {
+                                icon: 'HomeIcon',
+                                variant: 'danger',
+                                title: userData.message,
+                            },
+                        })
+                    }
+                }).catch(err => {
+                    console.warn('otp verify Error: ', err);
+                    this.$toast({
+                        component: ToastificationContent,
+                        position: 'top-right',
+                        props: {
+                            icon: 'HomeIcon',
+                            variant: 'danger',
+                            title: `Something went wrong.`,
+                        },
+                    })
+                })
+            }
+        })
+    }
   },
 }
 </script>
 
 <style lang="scss">
 @import '@core/scss/vue/pages/page-auth.scss';
+
+.centerAlign {
+    text-align: center;
+}
 </style>

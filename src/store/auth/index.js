@@ -21,8 +21,6 @@ export default {
             const user = (state.AppActiveUser && state.AppActiveUser.id != "") ? state.AppActiveUser : JSON.parse(localStorage.getItem("userInfo"));
         
             if (user) {
-                // if(  )
-
                 const hours = Math.abs(new Date() - new Date(user.genTokenDate)) / 36e5;
                 console.log('expire hours', hours);
                 if( hours < 12 ){
@@ -82,12 +80,6 @@ export default {
                 }
                 
                 axios.post(`${$apiURL}auth/signin_admin`, loginData).then((res) => {
-            
-                    context.commit('UPDATE_SIGNED', true);
-                    context.commit('UPDATE_USER_INFO', res.data);
-            
-                    axios.defaults.headers.common['x-access-token'] = res.data.accessToken
-                    
                     resolve(res);
                 }).catch((err) => {
                     console.log(err);
@@ -102,5 +94,27 @@ export default {
                 resolve('loged out')
             })
         },
+        twofactorVerify(context, payload) {
+            return new Promise((resolve, reject) => {
+                const data = {
+                    id: payload.id,
+                    token: payload.token
+                }
+                
+                axios.post(`${$apiURL}auth/twofactorVerify`, data).then((res) => {
+                    if( res.data.success ) {
+                        context.commit('UPDATE_SIGNED', true);
+                        context.commit('UPDATE_USER_INFO', res.data);
+                
+                        axios.defaults.headers.common['x-access-token'] = res.data.accessToken
+                    }
+                    
+                    resolve(res);
+                }).catch((err) => {
+                    console.log(err);
+                    reject(new Error(err));
+                })
+            })
+        }
     },
 }
