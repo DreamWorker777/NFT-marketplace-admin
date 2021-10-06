@@ -29,9 +29,7 @@ const router = new VueRouter({
       },
     },
 
-    // *===============================================---*
     // *--------- USER ---- ---------------------------------------*
-    // *===============================================---*
     {
         path: '/apps/users/list',
         name: 'apps-users-list',
@@ -67,6 +65,16 @@ const router = new VueRouter({
       },
     },
 
+    // ------------- Screening Offensive Contents ------------------
+    {
+      	path: '/screening/wordlist',
+		name: 'badWordList',
+		component: () => import('@/views/screening/WordList.vue'),
+		meta: {
+			requiresAuth: true
+		}
+    },
+    
     // ------------- 404 Page ----------------
     {
       path: '/error-404',

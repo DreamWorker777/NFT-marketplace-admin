@@ -14,4 +14,14 @@ export default [
             },
         ],
     },
+    {
+        title: 'Screen Contents',
+        icon: 'EyeIcon',
+        children: [
+            {
+                title: 'Bad WordList',
+                route: 'badWordList',
+            },
+        ],
+    },
 ]

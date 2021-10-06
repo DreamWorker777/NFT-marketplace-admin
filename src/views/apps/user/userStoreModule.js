@@ -13,9 +13,13 @@ export default {
   mutations: {},
   actions: {
     fetchUsers(ctx, queryParams) {
+        let query = queryParams;
+        if( query.sortBy == 'user' )
+            query.sortBy = 'username'
+
       return new Promise((resolve, reject) => {
         axios
-          .get(`${$apiURL}user/all`, { params: queryParams })
+          .get(`${$apiURL}user/all`, { params: query })
           .then(response => resolve(response))
           .catch(error => reject(error))
       })

@@ -388,8 +388,7 @@ export default {
     const {
         refFormObserver,
         getValidationState,
-        resetForm,
-    } = formValidation(resetuserData)
+    } = formValidation()
 
     return {
 
@@ -428,7 +427,6 @@ export default {
 
         refFormObserver,
         getValidationState,
-        resetForm,
     }
   },
   methods: {
@@ -439,7 +437,7 @@ export default {
         event.preventDefault()
         if( this.userData.password.length > 0 ) {
 
-        store.dispatch('app-user/resetPassword', {
+          store.dispatch('app-user/resetPassword', {
                 id: this.userData.id,
                 password: this.userData.password
             })
@@ -466,7 +464,6 @@ export default {
                     },
                 })
             })
-
             
             this.$bvModal.hide('reset-password')
         }

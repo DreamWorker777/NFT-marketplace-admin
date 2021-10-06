@@ -64,7 +64,7 @@ export default function useUsersList() {
             const users = response.data.allUsers
 
             callback(users)
-            totalUsers.value = users.length
+            totalUsers.value = response.data.total
         })
         .catch(() => {
             toast({
