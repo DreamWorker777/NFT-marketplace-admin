@@ -69,6 +69,15 @@ export default {
                     reject(new Error(err));
                 })
             })
+        },
+        getTransactions() {
+            return new Promise((resolve, reject) => {
+                axios.get(`${$apiURL}app/getTransactions`).then(res => {
+                    resolve(res);
+                }).catch(err => {
+                    reject(new Error(err));
+                })
+            })
         }
     },
 }

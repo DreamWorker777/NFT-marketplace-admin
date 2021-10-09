@@ -24,4 +24,14 @@ export default [
             },
         ],
     },
+    {
+        title: 'Chat',
+        route: 'apps-chat',
+        icon: 'MessageSquareIcon',
+    },
+    {
+        title: 'Transaction',
+        icon: 'DatabaseIcon',
+        route: 'transactionHistory'
+    }
 ]

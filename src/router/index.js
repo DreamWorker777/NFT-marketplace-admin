@@ -68,11 +68,33 @@ const router = new VueRouter({
     // ------------- Screening Offensive Contents ------------------
     {
       	path: '/screening/wordlist',
-		name: 'badWordList',
-		component: () => import('@/views/screening/WordList.vue'),
-		meta: {
-			requiresAuth: true
-		}
+        name: 'badWordList',
+        component: () => import('@/views/screening/WordList.vue'),
+        meta: {
+          requiresAuth: true
+        }
+    },
+
+	// ------------- Chat History ------------------
+    {
+      path: '/chat',
+      name: 'apps-chat',
+      component: () => import('@/views/apps/chat/Chat.vue'),
+      meta: {
+        requiresAuth: true,
+        contentRenderer: 'sidebar-left',
+            contentClass: 'chat-application',
+      }
+    },
+
+    // ------------- Chat History ------------------
+    {
+      path: '/transactions',
+      name: 'transactionHistory',
+      component: () => import('@/views/apps/transactions/TransactionHistory.vue'),
+      meta: {
+        requiresAuth: true,
+      }
     },
     
     // ------------- 404 Page ----------------
