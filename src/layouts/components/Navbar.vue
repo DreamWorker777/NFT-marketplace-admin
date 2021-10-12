@@ -103,10 +103,10 @@
                             default="10"
                             trim
                             placeholder="Please type the transaction percent."
-                            v-model="feePercent"
+                            v-model="feePercent_range"
                             />
                     </b-form-group>
-                    <div class="mt-2">Value: {{ feePercent }} %</div>
+                    <div class="mt-2">Value: {{ feePercent_range }} %</div>
                 </validation-provider>
             </b-form>
         </validation-observer>
@@ -157,6 +157,7 @@ export default {
     data: () =>  ({
         userInfo: store.getters['auth/userInfo'],
         feePercent: 0,
+        feePercent_range: 0,
     }),
     props: {
         toggleVerticalMenuActive: {
@@ -182,12 +183,14 @@ export default {
         async setTransFeePercent(event) {
             event.preventDefault();
 
-            await this.setFeePercent({ feePercent: this.feePercent }).then(res => {
+            await this.setFeePercent({ feePercent: this.feePercent_range }).then(res => {
                 if( res.data.success ) {
+                    this.feePercent = this.feePercent_range;
+
                     this.$toast({
                         component: ToastificationContent,
                         props: {
-                            title: 'Successfully reset the user password.',
+                            title: 'Successfully set the marketplace fee percent.',
                             icon: 'CheckIcon',
                             variant: 'success',
                         },
@@ -209,6 +212,7 @@ export default {
     async mounted() {
         await this.getFeePercent().then(response => {
             this.feePercent = response.data.percent;
+            this.feePercent_range = response.data.percent;
         });
     },
     setup() {
